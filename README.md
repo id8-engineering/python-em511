@@ -1,3 +1,5 @@
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/id8-engineering/python-em511/badge)](https://scorecard.dev/viewer/?uri=github.com/github.com/id8-engineering/python-em511)
+
 # python-em511
 
 Driver for Carlo Gavazzi EM511 Series Single Phase Energy Meters using Modbus RTU.
