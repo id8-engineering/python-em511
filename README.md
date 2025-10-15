@@ -1,4 +1,4 @@
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/id8-engineering/python-em511/badge)](https://scorecard.dev/viewer/?uri=github.com/github.com/id8-engineering/python-em511)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/id8-engineering/python-em511/badge)](https://scorecard.dev/viewer/?uri=github.com/id8-engineering/python-em511)
 
 # python-em511
 
