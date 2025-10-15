@@ -21,3 +21,9 @@ dev = [
     "pyright>=1.1.406",
     "ruff>=0.14.0",
 ]
+
+[tool.ruff.lint]
+select = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
