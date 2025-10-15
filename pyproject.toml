@@ -23,7 +23,7 @@ dev = [
 ]
 
 [tool.ruff.lint]
-select = ["D"]
+select = ["ALL"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
