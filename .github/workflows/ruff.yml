@@ -1,4 +1,4 @@
-name: Ruff
+name: ruff
 
 on:
   pull_request:
