@@ -31,5 +31,9 @@ dev = [
 [tool.ruff.lint]
 select = ["ALL"]
 
+ignore = [
+    "COM812",  # in conflict with formatter
+]
+
 [tool.ruff.lint.pydocstyle]
 convention = "google"
