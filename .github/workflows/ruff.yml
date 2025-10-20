@@ -27,8 +27,11 @@ jobs:
       - name: Set up uv
         uses: astral-sh/setup-uv@2ddd2b9cb38ad8efd50337e8ab201519a34c9f24 # v7.1.1
 
-      - name: Run Ruff
+      - name: Run uv sync
+        run: uv sync
+
+      - name: Run ruff
         run: uv run ruff check --output-format=github .
 
-      - name: Run Ruff formatter
+      - name: Run ruff formatter
         run: uv run ruff format --diff .
