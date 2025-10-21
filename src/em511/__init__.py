@@ -1,6 +1,9 @@
-"""Hello package."""
+"""Top-level package for the EM511 driver.
 
+Provides the `Em511` class for reading and writing Modbus registers
+using Carlo Gavazzi EM511 energy meters.
+"""
 
-def hello() -> str:
-    """Hello docstring."""
-    return "Hello from python-em511!"
+from .em511 import Em511
+
+__all__ = ["Em511"]
