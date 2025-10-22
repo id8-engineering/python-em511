@@ -28,6 +28,9 @@ dev = [
     "ruff>=0.14.0",
 ]
 
+[tool.ruff]
+line-length = 120
+
 [tool.ruff.lint]
 select = ["ALL"]
 
