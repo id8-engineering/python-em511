@@ -17,6 +17,7 @@ repos:
     - id: pyright
       additional_dependencies:
         - pymodbus[serial]>=3.11
+        - pytest>=3.8
 - repo: https://github.com/compilerla/conventional-pre-commit
   rev: v4.2.0
   hooks:
