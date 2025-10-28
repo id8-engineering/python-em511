@@ -26,10 +26,11 @@ class Em511:
     INPUT_MAX_VALUE_32 = 0x7FFFFFFF
     INPUT_MAX_VALUE_16 = 0x7FFF
 
-    EM511_REGISTER_V = 0x0000
-    EM511_REGISTER_A = 0x0002
+    EM511_REGISTER_V = 0x0
+    EM511_REGISTER_A = 0x2
     EM511_REGISTER_HZ = 0xF
     EM511_REGISTER_PASSWORD = 0x1000
+    EM511_REGISTER_KWH_TOT = 0x10
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -166,6 +167,22 @@ class Em511:
         regs = self._read_input_registers(self.EM511_REGISTER_HZ, self.INT16_REG_COUNT)
         value = Decimal(self._unpack(regs, self.EM511_REGISTER_HZ)) / self.SCALE_10
         return round(value, 1)
+
+    @property
+    def kWh_tot(self) -> Decimal:
+        """Kilo watt hours in total (kWh).
+
+        Returns:
+            Decimal: Current total kWh value.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_KWH_TOT, self.INT32_REG_COUNT)
+        value = Decimal(self._unpack(regs, self.EM511_REGISTER_KWH_TOT)) / self.SCALE_10
+        return round(value, 1)
+
 
     @property
     def password(self) -> int:
