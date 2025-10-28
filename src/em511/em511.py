@@ -25,6 +25,8 @@ class Em511:
     PASSWORD_MAX_VALUE = 9999
     INPUT_MAX_VALUE_32 = 0x7FFFFFFF
     INPUT_MAX_VALUE_16 = 0x7FFF
+    DEVICE_ADDRESS_MAX_VALUE = 247
+    DEVICE_ADDRESS_MIN_VALUE = 1
 
     EM511_REGISTER_V = 0x0
     EM511_REGISTER_A = 0x2
@@ -35,6 +37,7 @@ class Em511:
     EM511_REGISTER_PASSWORD = 0x1000
     EM511_REGISTER_KWH_TOT = 0x10
     EM511_REGISTER_KWH_PARTIAL = 0x14
+    EM511_REGISTER_DEVICE_ID = 0x2000
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -263,6 +266,27 @@ class Em511:
         value = self._unpack(regs, self.EM511_REGISTER_PASSWORD)
         if not (self.PASSWORD_MIN_VALUE <= value <= self.PASSWORD_MAX_VALUE):
             msg = f"Invalid password value: {value}. Must be between 0 and 9999."
+            raise ValueError(msg)
+        return value
+
+    @property
+    def device_id(self) -> int:
+        """Device address.
+
+        (Default value=1)
+
+        Returns:
+            Int: Current device address.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ValueError: If device address is out of range.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_DEVICE_ID, self.INT16_REG_COUNT)
+        value = self._unpack(regs, self.EM511_REGISTER_DEVICE_ID)
+        if not (self.DEVICE_ADDRESS_MIN_VALUE <= value <= self.DEVICE_ADDRESS_MAX_VALUE):
+            msg = f"Invalid device address value: {value}. Must be between 1 and 247."
             raise ValueError(msg)
         return value
 

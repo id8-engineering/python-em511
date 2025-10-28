@@ -35,7 +35,7 @@ def test_V() -> None:
     with pytest.raises(ValueError, match="Unexpected register count:"):
         _ = meter.V
 
-    """Test 6: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
+    """Test 4: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
     mock_result.registers = [0xFFFF, 0x7FFF]
     client.read_input_registers.return_value = mock_result
     with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
@@ -67,7 +67,7 @@ def test_get_A() -> None:
     with pytest.raises(ValueError, match="Unexpected register count:"):
         _ = meter.A
 
-    """Test 6: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
+    """Test 4: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
     mock_result.registers = [0xFFFF, 0x7FFF]
     client.read_input_registers.return_value = mock_result
     with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
@@ -99,7 +99,7 @@ def test_get_W() -> None:
     with pytest.raises(ValueError, match="Unexpected register count:"):
         _ = meter.W
 
-    """Test 6: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
+    """Test 4: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
     mock_result.registers = [0xFFFF, 0x7FFF]
     client.read_input_registers.return_value = mock_result
     with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
@@ -131,7 +131,7 @@ def test_get_W_dmd() -> None:
     with pytest.raises(ValueError, match="Unexpected register count:"):
         _ = meter.W_dmd
 
-    """Test 6: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
+    """Test 4: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
     mock_result.registers = [0xFFFF, 0x7FFF]
     client.read_input_registers.return_value = mock_result
     with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
@@ -163,7 +163,7 @@ def test_get_W_dmd_peak() -> None:
     with pytest.raises(ValueError, match="Unexpected register count:"):
         _ = meter.W_dmd_peak
 
-    """Test 6: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
+    """Test 4: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
     mock_result.registers = [0xFFFF, 0x7FFF]
     client.read_input_registers.return_value = mock_result
     with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
@@ -195,7 +195,7 @@ def test_get_Hz() -> None:
     with pytest.raises(ValueError, match="Unexpected register count:"):
         _ = meter.Hz
 
-    """Test 6: Should raise exception if input value exceeds maximum value, display shows 'EEE', 16-bit register."""
+    """Test 4: Should raise exception if input value exceeds maximum value, display shows 'EEE', 16-bit register."""
     mock_result.registers = [0x7FFF]
     client.read_input_registers.return_value = mock_result
     with pytest.raises(ValueError, match="Input overflow EEE for 16-bit register: "):
@@ -227,7 +227,7 @@ def test_kWh_tot() -> None:
     with pytest.raises(ValueError, match="Unexpected register count:"):
         _ = meter.kWh_tot
 
-    """Test 6: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
+    """Test 4: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
     mock_result.registers = [0xFFFF, 0x7FFF]
     client.read_input_registers.return_value = mock_result
     with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
@@ -259,7 +259,7 @@ def test_kWh_partial() -> None:
     with pytest.raises(ValueError, match="Unexpected register count:"):
         _ = meter.kWh_partial
 
-    """Test 6: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
+    """Test 4: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
     mock_result.registers = [0xFFFF, 0x7FFF]
     client.read_input_registers.return_value = mock_result
     with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
@@ -290,6 +290,44 @@ def test_get_password() -> None:
     client.read_input_registers.return_value = mock_result
     with pytest.raises(ValueError, match="Invalid password value: "):
         _ = meter.password
+
+
+def test_get_device_id() -> None:
+    """Test Get device id/address."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: should pass"""
+    mock_result.registers = [0xF7]
+    client.read_input_registers.return_value = mock_result
+    value = meter.device_id
+    assert value == 247
+
+    """Test 2: Should pass."""
+    mock_result.registers = [0x1]
+    client.read_input_registers.return_value = mock_result
+    value = meter.device_id
+    assert value == 1
+
+    """Test 3: Should raise exception due to value not in range"""
+    mock_result.registers = [0x1860]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Invalid device address value: "):
+        _ = meter.device_id
+
+    """Test 4: Should raise exception due to more registers in use than allowed."""
+    mock_result.registers = [0x1860, 0x0023, 0x5743]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Unexpected register count:"):
+        _ = meter.device_id
+
+    """Test 5: Should raise exception if input value exceeds maximum value, display shows 'EEE', 16-bit register."""
+    mock_result.registers = [0x7FFF]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Input overflow EEE for 16-bit register: "):
+        _ = meter.device_id
 
 
 def test_set_password() -> None:
