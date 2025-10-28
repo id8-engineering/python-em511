@@ -37,6 +37,7 @@ class Em511:
     EM511_REGISTER_PASSWORD = 0x1000
     EM511_REGISTER_KWH_TOT = 0x10
     EM511_REGISTER_KWH_PARTIAL = 0x14
+    EM511_REGISTER_HOUR_COUNTER = 0x2C
     EM511_REGISTER_DEVICE_ID = 0x2000
 
     SCALE_10 = 10
@@ -249,6 +250,21 @@ class Em511:
         regs = self._read_input_registers(self.EM511_REGISTER_KWH_PARTIAL, self.INT32_REG_COUNT)
         value = Decimal(self._unpack(regs, self.EM511_REGISTER_KWH_PARTIAL)) / self.SCALE_10
         return round(value, 1)
+
+    @property
+    def hour_counter(self) -> Decimal:
+        """Run time in hours (h).
+
+        Returns:
+            Decimal: Run time in hours value.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_HOUR_COUNTER, self.INT32_REG_COUNT)
+        value = Decimal(self._unpack(regs, self.EM511_REGISTER_HOUR_COUNTER)) / self.SCALE_100
+        return round(value, 2)
 
     @property
     def password(self) -> int:
