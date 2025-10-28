@@ -31,6 +31,7 @@ class Em511:
     EM511_REGISTER_HZ = 0xF
     EM511_REGISTER_PASSWORD = 0x1000
     EM511_REGISTER_KWH_TOT = 0x10
+    EM511_REGISTER_KWH_PARTIAL = 0x14
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -183,6 +184,20 @@ class Em511:
         value = Decimal(self._unpack(regs, self.EM511_REGISTER_KWH_TOT)) / self.SCALE_10
         return round(value, 1)
 
+    @property
+    def kWh_partial(self) -> Decimal:
+        """Kilo watt hours partial (kWh).
+
+        Returns:
+            Decimal: Current partial kWh value.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_KWH_PARTIAL, self.INT32_REG_COUNT)
+        value = Decimal(self._unpack(regs, self.EM511_REGISTER_KWH_PARTIAL)) / self.SCALE_10
+        return round(value, 1)
 
     @property
     def password(self) -> int:
