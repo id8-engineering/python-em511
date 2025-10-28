@@ -106,6 +106,38 @@ def test_get_W() -> None:
         _ = meter.W
 
 
+def test_get_W_dmd() -> None:
+    """Test Get w_dmd."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: should pass"""
+    mock_result.registers = [0x2904, 0x0000]
+    client.read_input_registers.return_value = mock_result
+    value = meter.W_dmd
+    assert value == Decimal("1050.0")
+
+    """Test 2: Should pass."""
+    mock_result.registers = [0x1860, 0x0023]
+    client.read_input_registers.return_value = mock_result
+    value = meter.W_dmd
+    assert value == Decimal("230000.0")
+
+    """Test 3: Should raise exception due to more registers in use than allowed."""
+    mock_result.registers = [0x1860, 0x0023, 0x4244]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Unexpected register count:"):
+        _ = meter.W_dmd
+
+    """Test 6: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
+    mock_result.registers = [0xFFFF, 0x7FFF]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
+        _ = meter.W_dmd
+
+
 def test_get_Hz() -> None:
     """Test Get HZ."""
     client = MagicMock()

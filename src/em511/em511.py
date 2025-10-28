@@ -29,6 +29,7 @@ class Em511:
     EM511_REGISTER_V = 0x0
     EM511_REGISTER_A = 0x2
     EM511_REGISTER_W = 0x4
+    EM511_REGISTER_W_DMD = 0xA
     EM511_REGISTER_HZ = 0xF
     EM511_REGISTER_PASSWORD = 0x1000
     EM511_REGISTER_KWH_TOT = 0x10
@@ -168,6 +169,21 @@ class Em511:
         """
         regs = self._read_input_registers(self.EM511_REGISTER_W, self.INT32_REG_COUNT)
         value = Decimal(self._unpack(regs, self.EM511_REGISTER_W)) / self.SCALE_10
+        return round(value, 1)
+
+    @property
+    def W_dmd(self) -> Decimal:
+        """Power (W_dmd).
+
+        Returns:
+            Decimal: Current watt demand value.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_W_DMD, self.INT32_REG_COUNT)
+        value = Decimal(self._unpack(regs, self.EM511_REGISTER_W_DMD)) / self.SCALE_10
         return round(value, 1)
 
     @property
