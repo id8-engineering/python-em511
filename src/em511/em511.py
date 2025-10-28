@@ -28,6 +28,7 @@ class Em511:
 
     EM511_REGISTER_V = 0x0000
     EM511_REGISTER_A = 0x0002
+    EM511_REGISTER_HZ = 0xF
     EM511_REGISTER_PASSWORD = 0x1000
 
     SCALE_10 = 10
@@ -150,6 +151,21 @@ class Em511:
         regs = self._read_input_registers(self.EM511_REGISTER_A, self.INT32_REG_COUNT)
         value = Decimal(self._unpack(regs, self.EM511_REGISTER_A)) / self.SCALE_1000
         return round(value, 3)
+
+    @property
+    def Hz(self) -> Decimal:
+        """Hertz (Hz).
+
+        Returns:
+            Decimal: Current hertz value.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_HZ, self.INT16_REG_COUNT)
+        value = Decimal(self._unpack(regs, self.EM511_REGISTER_HZ)) / self.SCALE_10
+        return round(value, 1)
 
     @property
     def password(self) -> int:
