@@ -95,7 +95,7 @@ def test_get_password() -> None:
     """Test 3: Should raise exception if password return a value out of its range of 0-9999."""
     mock_result.registers = [0x186A0, 0x0000]
     client.read_input_registers.return_value = mock_result
-    with pytest.raises(ValueError, match="Invalid password value: "):
+    with pytest.raises(ValueError, match="Invalid value for"):
         _ = meter.password
 
 
@@ -115,7 +115,7 @@ def test_set_password() -> None:
     client.write_register.reset_mock()
 
     """Test 2: Try set password out of range."""
-    with pytest.raises(ValueError, match="Invalid password value:"):
+    with pytest.raises(ValueError, match="Invalid value for"):
         meter.password = 12345
 
     """Test 3: Try set password at maximum value."""
