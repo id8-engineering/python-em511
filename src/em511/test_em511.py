@@ -491,6 +491,44 @@ def test_get_alarm_state() -> None:
         _ = meter.alarm_state
 
 
+def test_get_alarm_mode() -> None:
+    """Test Get alarm_mode."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: should pass"""
+    mock_result.registers = [0x0006]
+    client.read_input_registers.return_value = mock_result
+    value = meter.alarm_mode
+    assert value == int("6")
+
+    """Test 2: Should pass."""
+    mock_result.registers = [0x0001]
+    client.read_input_registers.return_value = mock_result
+    value = meter.alarm_mode
+    assert value == int("1")
+
+    """Test 3: Should raise exception due to value not in range"""
+    mock_result.registers = [0x0007]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Invalid alarm mode value: "):
+        _ = meter.alarm_mode
+
+    """Test 4: Should raise exception due to more registers in use than allowed."""
+    mock_result.registers = [0x1860, 0x0023, 0x4244]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Unexpected register count:"):
+        _ = meter.alarm_mode
+
+    """Test 5: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
+    mock_result.registers = [0x7FFF]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Input overflow EEE for 16-bit register: "):
+        _ = meter.alarm_mode
+
+
 def test_get_dmd_integration_time() -> None:
     """Test Get dmd_integration_time."""
     client = MagicMock()
@@ -853,44 +891,6 @@ def test_set_alarm_mode() -> None:
     client.write_register.return_value = mock_result
     with pytest.raises(ModbusException, match="Failed to write to single register:"):
         meter.alarm_mode = 1
-
-
-def test_get_alarm_mode() -> None:
-    """Test Get alarm_mode."""
-    client = MagicMock()
-    mock_result = MagicMock()
-    mock_result.isError.return_value = False
-    meter = Em511(1, client)
-
-    """Test 1: should pass"""
-    mock_result.registers = [0x0006]
-    client.read_input_registers.return_value = mock_result
-    value = meter.alarm_mode
-    assert value == int("6")
-
-    """Test 2: Should pass."""
-    mock_result.registers = [0x0001]
-    client.read_input_registers.return_value = mock_result
-    value = meter.alarm_mode
-    assert value == int("1")
-
-    """Test 3: Should raise exception due to value not in range"""
-    mock_result.registers = [0x0007]
-    client.read_input_registers.return_value = mock_result
-    with pytest.raises(ValueError, match="Invalid alarm mode value: "):
-        _ = meter.alarm_mode
-
-    """Test 4: Should raise exception due to more registers in use than allowed."""
-    mock_result.registers = [0x1860, 0x0023, 0x4244]
-    client.read_input_registers.return_value = mock_result
-    with pytest.raises(ValueError, match="Unexpected register count:"):
-        _ = meter.alarm_mode
-
-    """Test 5: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
-    mock_result.registers = [0x7FFF]
-    client.read_input_registers.return_value = mock_result
-    with pytest.raises(ValueError, match="Input overflow EEE for 16-bit register: "):
-        _ = meter.alarm_mode
 
 
 def test_set_device_id() -> None:
