@@ -3,7 +3,7 @@
 """Test file for driver."""
 
 from decimal import Decimal
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 import pytest
 from pymodbus import ModbusException
@@ -897,8 +897,8 @@ def test_reset_tot_energy_and_run_hour_counter() -> None:
         meter.reset_tot_energy_and_run_hour_counter()
 
 
-def test_reset_partial_energy_and_partial_hour() -> None:
-    """Test Reset partial energy + partial run hour counters."""
+def test_reset_partial_energy_and_hour_counter() -> None:
+    """Test Reset partial energy + partial hour counters."""
     client = MagicMock()
     mock_result = MagicMock()
     mock_result.isError.return_value = False
@@ -917,3 +917,27 @@ def test_reset_partial_energy_and_partial_hour() -> None:
     client.write_register.return_value = mock_result
     with pytest.raises(ModbusException, match="Failed to write to single register:"):
         meter.reset_partial_energy_and_hour_counter()
+
+
+def test_reset_to_factory_settings() -> None:
+    """Test Reset DMD and DMD max values."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    client.write_register.return_value = mock_result
+    meter = Em511(1, client)
+
+    """Test 1: Both writes occur"""
+    meter.reset_to_factory_settings()
+    expected_calls = [
+        call(address=16416, value=0x0A0A, device_id=1),
+        call(address=16416, value=0xC1A0, device_id=1),
+    ]
+    assert client.write_register.call_args_list == expected_calls
+    assert client.write_register.call_count == 2
+
+    """Test 3: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.reset_to_factory_settings()
