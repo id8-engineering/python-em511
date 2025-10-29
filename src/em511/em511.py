@@ -37,6 +37,8 @@ class Em511:
     REPLY_DELAY_MAX_VALUE = 1000
     DMD_TIME_MIN_VALUE = 0
     DMD_TIME_MAX_VALUE = 6
+    ALARM_STATE_MIN_VALUE = 0
+    ALARM_STATE_MAX_VALUE = 1
 
     EM511_REGISTER_V = 0x0
     EM511_REGISTER_A = 0x2
@@ -62,6 +64,7 @@ class Em511:
     EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER = 0x4004
     EM511_REGISTER_RESET_DMD_AND_DMD_MAX = 0x4005
     EM511_REGISTER_RESET_TO_FACTORY_SETTINGS = 0x4020
+    EM511_REGISTER_ALARM_STATE = 0x1014
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -365,6 +368,28 @@ class Em511:
         value = self._unpack(regs, self.EM511_REGISTER_PASSWORD)
         if not (self.PASSWORD_MIN_VALUE <= value <= self.PASSWORD_MAX_VALUE):
             msg = f"Invalid password value: {value}. Must be between 0 and 9999."
+            raise ValueError(msg)
+        return value
+
+    @property
+    def alarm_state(self) -> int:
+        """Alarm state.
+
+        0=Disabled, Default
+        1=Enabled
+
+        Returns:
+            int: Current alarm state.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ValueError: If alarm state is out of range.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_ALARM_STATE, self.INT16_REG_COUNT)
+        value = self._unpack(regs, self.EM511_REGISTER_ALARM_STATE)
+        if not (self.ALARM_STATE_MIN_VALUE <= value <= self.ALARM_STATE_MAX_VALUE):
+            msg = f"Invalid alarm state value: {value}. Must be between 0 and 1."
             raise ValueError(msg)
         return value
 
