@@ -919,6 +919,28 @@ def test_reset_partial_energy_and_hour_counter() -> None:
         meter.reset_partial_energy_and_hour_counter()
 
 
+def test_reset_dmd_and_dmd_max() -> None:
+    """Test Reset DMD and DMD max values.."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: Reset"""
+    mock_result.registers = [16389]
+    client.write_register.return_value = mock_result
+    meter.reset_dmd_and_dmd_max()
+    client.write_register.assert_called_once_with(address=16389, value=1, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 4: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.reset_dmd_and_dmd_max()
+
+
 def test_reset_to_factory_settings() -> None:
     """Test Reset DMD and DMD max values."""
     client = MagicMock()

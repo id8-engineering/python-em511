@@ -57,6 +57,7 @@ class Em511:
     EM511_REGISTER_REPLY_DELAY = 0x2004
     EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER = 0x4003
     EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER = 0x4004
+    EM511_REGISTER_RESET_DMD_AND_DMD_MAX = 0x4005
     EM511_REGISTER_RESET_TO_FACTORY_SETTINGS = 0x4020
 
     SCALE_10 = 10
@@ -600,6 +601,16 @@ class Em511:
             ModbusException: If failed to write to single register.
         """
         self._write_register(self.EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER, 1)
+
+    def reset_dmd_and_dmd_max(self) -> None:
+        """Reset DMD and DMD max values.
+
+        Write 1 to execute.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+        """
+        self._write_register(self.EM511_REGISTER_RESET_DMD_AND_DMD_MAX, 1)
 
     def reset_to_factory_settings(self) -> None:
         """Factory Restore (Default settings).
