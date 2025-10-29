@@ -29,6 +29,8 @@ class Em511:
     DEVICE_ADDRESS_MIN_VALUE = 1
     BAUD_RATE_MIN_VALUE = 1
     BAUD_RATE_MAX_VALUE = 5
+    PARITY_MIN_VALUE = 1
+    PARITY_MAX_VALUE = 2
 
     EM511_REGISTER_V = 0x0
     EM511_REGISTER_A = 0x2
@@ -42,6 +44,7 @@ class Em511:
     EM511_REGISTER_HOUR_COUNTER = 0x2C
     EM511_REGISTER_DEVICE_ID = 0x2000
     EM511_REGISTER_BAUD_RATE = 0x2001
+    EM511_REGISTER_PARITY = 0x2002
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -328,6 +331,27 @@ class Em511:
         value = self._unpack(regs, self.EM511_REGISTER_BAUD_RATE)
         if not (self.BAUD_RATE_MIN_VALUE <= value <= self.BAUD_RATE_MAX_VALUE):
             msg = f"Invalid baud rate value: {value}. Must be between 1 and 5."
+            raise ValueError(msg)
+        return value
+
+    @property
+    def parity(self) -> int:
+        """Parity.
+
+        1=None, 2=Even (default=1)
+
+        Returns:
+            Int: Current parity.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ValueError: If parity is out of range.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_PARITY, self.INT16_REG_COUNT)
+        value = self._unpack(regs, self.EM511_REGISTER_PARITY)
+        if not (self.PARITY_MIN_VALUE <= value <= self.PARITY_MAX_VALUE):
+            msg = f"Invalid parity value: {value}. Must be between 1 and 2."
             raise ValueError(msg)
         return value
 
