@@ -584,3 +584,41 @@ def test_set_device_id() -> None:
     client.write_register.return_value = mock_result
     meter.device_id = 1
     client.write_register.assert_called_once_with(address=8192, value=1, device_id=1)
+
+
+def test_set_baud_rate() -> None:
+    """Test Set baud rate."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: Set baud rate"""
+    mock_result.registers = [8193]
+    client.write_register.return_value = mock_result
+    meter.baud_rate = 2
+    client.write_register.assert_called_once_with(address=8193, value=2, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 2: Try set baud rate out of range."""
+    with pytest.raises(ValueError, match="Invalid baud rate value:"):
+        meter.baud_rate = 6
+
+    """Test 3: Try set baud rate out of range."""
+    with pytest.raises(ValueError, match="Invalid baud rate value:"):
+        meter.baud_rate = 0
+
+    """Test 4: Try set baud rate at maximum value."""
+    mock_result.registers = [8193]
+    client.write_register.return_value = mock_result
+    meter.baud_rate = 5
+    client.write_register.assert_called_once_with(address=8193, value=5, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 5: Try set baud rate at lowest value."""
+    mock_result.registers = [8193]
+    client.write_register.return_value = mock_result
+    meter.baud_rate = 1
+    client.write_register.assert_called_once_with(address=8193, value=1, device_id=1)

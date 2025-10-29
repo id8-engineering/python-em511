@@ -426,8 +426,7 @@ class Em511:
     def device_id(self, value: int) -> None:
         """Device id.
 
-        Value:
-            Range 1 - 247
+        Range 1 - 247
 
         Args:
             value (int): Set device id.
@@ -440,3 +439,22 @@ class Em511:
             msg = f"Invalid device id value: {value}. Must be between 1 and 247."
             raise ValueError(msg)
         self._write_register(self.EM511_REGISTER_DEVICE_ID, value)
+
+    @baud_rate.setter
+    def baud_rate(self, value: int) -> None:
+        """Baud rate.
+
+        1=9.6kbps, 2=19.2kbps, 3=38.4kbps,
+        4=57.6kbps, 5=115.2kbps (default=1).
+
+        Args:
+            value (int): Set baud rate.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+            ValueError: If baud rate value is out of range.
+        """
+        if not (self.BAUD_RATE_MIN_VALUE <= value <= self.BAUD_RATE_MAX_VALUE):
+            msg = f"Invalid baud rate value: {value}. Must be between 1 and 5."
+            raise ValueError(msg)
+        self._write_register(self.EM511_REGISTER_BAUD_RATE, value)
