@@ -41,6 +41,8 @@ class Em511:
     ALARM_STATE_MAX_VALUE = 1
     ALARM_MODE_MAX_VALUE = 6
     ALARM_MODE_MIN_VALUE = 1
+    ALARM_DELAY_MIN_VALUE = 0
+    ALARM_DELAY_MAX_VALUE = 3600
 
     EM511_REGISTER_V = 0x0
     EM511_REGISTER_A = 0x2
@@ -68,6 +70,7 @@ class Em511:
     EM511_REGISTER_RESET_DMD_AND_DMD_MAX = 0x4005
     EM511_REGISTER_RESET_TO_FACTORY_SETTINGS = 0x4020
     EM511_REGISTER_ALARM_STATE = 0x1014
+    EM511_REGISTER_ALARM_DELAY = 0x101A
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -419,6 +422,28 @@ class Em511:
         value = self._unpack(regs, self.EM511_REGISTER_ALARM_MODE)
         if not (self.ALARM_MODE_MIN_VALUE <= value <= self.ALARM_MODE_MAX_VALUE):
             msg = f"Invalid alarm mode value: {value}. Must be between 1 and 6."
+            raise ValueError(msg)
+        return value
+
+    @property
+    def alarm_delay(self) -> int:
+        """Alarm mode.
+
+        Value: Min=0 (default)
+            MAx=3600
+
+        Returns:
+            int: Current alarm delay setting.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ValueError: If alarm state is out of range.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_ALARM_DELAY, self.INT16_REG_COUNT)
+        value = self._unpack(regs, self.EM511_REGISTER_ALARM_DELAY)
+        if not (self.ALARM_DELAY_MIN_VALUE <= value <= self.ALARM_DELAY_MAX_VALUE):
+            msg = f"Invalid alarm delay value: {value}. Must be between 0 and 3600."
             raise ValueError(msg)
         return value
 
