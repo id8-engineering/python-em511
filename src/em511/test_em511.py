@@ -791,6 +791,38 @@ def test_set_password() -> None:
         meter.password = 1
 
 
+def test_set_alarm_state() -> None:
+    """Test Set alarm state."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: Set alarm state"""
+    mock_result.registers = [4116]
+    client.write_register.return_value = mock_result
+    meter.alarm_state = 0
+    client.write_register.assert_called_once_with(address=4116, value=0, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 2: Try set alarm state out of range."""
+    with pytest.raises(ValueError, match="Invalid alarm state value:"):
+        meter.alarm_state = 2
+
+    """Test 3: Try set alarm state at maximum value."""
+    mock_result.registers = [4116]
+    client.write_register.return_value = mock_result
+    meter.alarm_state = 1
+    client.write_register.assert_called_once_with(address=4116, value=1, device_id=1)
+
+    """Test 4: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.alarm_state = 1
+
+
 def test_set_device_id() -> None:
     """Test Set device id."""
     client = MagicMock()
