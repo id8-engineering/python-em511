@@ -511,3 +511,21 @@ class Em511:
             msg = f"Invalid stop bit value: {value}. Must be between 0 and 1."
             raise ValueError(msg)
         self._write_register(self.EM511_REGISTER_STOP_BIT, value)
+
+    @reply_delay.setter
+    def reply_delay(self, value: int) -> None:
+        """Reply delay.
+
+        Range: 0 - 1000 ms (default=0).
+
+        Args:
+            value (int): Set reply delay.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+            ValueError: If reply delay value is out of range.
+        """
+        if not (self.REPLY_DELAY_MIN_VALUE <= value <= self.REPLY_DELAY_MAX_VALUE):
+            msg = f"Invalid reply delay value: {value}. Must be between 0 and 1000."
+            raise ValueError(msg)
+        self._write_register(self.EM511_REGISTER_REPLY_DELAY, value)

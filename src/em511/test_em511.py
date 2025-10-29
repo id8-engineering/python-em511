@@ -714,3 +714,29 @@ def test_set_stop_bit() -> None:
     client.write_register.assert_called_once_with(address=8195, value=1, device_id=1)
 
     client.write_register.reset_mock()
+
+
+def test_set_reply_delay() -> None:
+    """Test Set reply delay."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: Set reply delay"""
+    mock_result.registers = [8196]
+    client.write_register.return_value = mock_result
+    meter.reply_delay = 0
+    client.write_register.assert_called_once_with(address=8196, value=0, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 2: Try set reply delay out of range."""
+    with pytest.raises(ValueError, match="Invalid reply delay value:"):
+        meter.reply_delay = 1001
+
+    """Test 3: Try set reply delay at maximum value."""
+    mock_result.registers = [8196]
+    client.write_register.return_value = mock_result
+    meter.reply_delay = 1000
+    client.write_register.assert_called_once_with(address=8196, value=1000, device_id=1)
