@@ -31,6 +31,8 @@ class Em511:
     BAUD_RATE_MAX_VALUE = 5
     PARITY_MIN_VALUE = 1
     PARITY_MAX_VALUE = 2
+    STOP_BIT_MIN_VALUE = 1
+    STOP_BIT_MAX_VALUE = 2
 
     EM511_REGISTER_V = 0x0
     EM511_REGISTER_A = 0x2
@@ -45,6 +47,7 @@ class Em511:
     EM511_REGISTER_DEVICE_ID = 0x2000
     EM511_REGISTER_BAUD_RATE = 0x2001
     EM511_REGISTER_PARITY = 0x2002
+    EM511_REGISTER_STOP_BIT = 0x2003
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -352,6 +355,27 @@ class Em511:
         value = self._unpack(regs, self.EM511_REGISTER_PARITY)
         if not (self.PARITY_MIN_VALUE <= value <= self.PARITY_MAX_VALUE):
             msg = f"Invalid parity value: {value}. Must be between 1 and 2."
+            raise ValueError(msg)
+        return value
+
+    @property
+    def stop_bit(self) -> int:
+        """Stop bits.
+
+        0=1 stop bit (default), 1=2 stop bits; fixed to 1 if parity=Even
+
+        Returns:
+            Int: Current stop bit value.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ValueError: If stop bit is out of range.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_STOP_BIT, self.INT16_REG_COUNT)
+        value = self._unpack(regs, self.EM511_REGISTER_STOP_BIT)
+        if not (self.STOP_BIT_MIN_VALUE <= value <= self.STOP_BIT_MAX_VALUE):
+            msg = f"Invalid stop bit value: {value}. Must be between 1 and 2."
             raise ValueError(msg)
         return value
 
