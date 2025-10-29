@@ -835,10 +835,10 @@ def test_set_password() -> None:
     meter = Em511(1, client)
 
     """Test 1: Set password"""
-    mock_result.registers = [4096]
+    mock_result.registers = [0x1000]
     client.write_register.return_value = mock_result
     meter.password = 1236
-    client.write_register.assert_called_once_with(address=4096, value=1236, device_id=1)
+    client.write_register.assert_called_once_with(address=0x1000, value=1236, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -847,18 +847,18 @@ def test_set_password() -> None:
         meter.password = 12345
 
     """Test 3: Try set password at maximum value."""
-    mock_result.registers = [4096]
+    mock_result.registers = [0x1000]
     client.write_register.return_value = mock_result
     meter.password = 9999
-    client.write_register.assert_called_once_with(address=4096, value=9999, device_id=1)
+    client.write_register.assert_called_once_with(address=0x1000, value=9999, device_id=1)
 
     client.write_register.reset_mock()
 
     """Test 4: Try set password at lowest value."""
-    mock_result.registers = [4096]
+    mock_result.registers = [0x1000]
     client.write_register.return_value = mock_result
     meter.password = 0
-    client.write_register.assert_called_once_with(address=4096, value=0, device_id=1)
+    client.write_register.assert_called_once_with(address=0x1000, value=0, device_id=1)
 
     """Test 5: Should raise exception due to failed writing to single register."""
     mock_result.isError.return_value = True
@@ -875,10 +875,10 @@ def test_set_alarm_state() -> None:
     meter = Em511(1, client)
 
     """Test 1: Set alarm state"""
-    mock_result.registers = [4116]
+    mock_result.registers = [0x1014]
     client.write_register.return_value = mock_result
     meter.alarm_state = 0
-    client.write_register.assert_called_once_with(address=4116, value=0, device_id=1)
+    client.write_register.assert_called_once_with(address=0x1014, value=0, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -887,10 +887,10 @@ def test_set_alarm_state() -> None:
         meter.alarm_state = 2
 
     """Test 3: Try set alarm state at maximum value."""
-    mock_result.registers = [4116]
+    mock_result.registers = [0x1014]
     client.write_register.return_value = mock_result
     meter.alarm_state = 1
-    client.write_register.assert_called_once_with(address=4116, value=1, device_id=1)
+    client.write_register.assert_called_once_with(address=0x1014, value=1, device_id=1)
 
     """Test 4: Should raise exception due to failed writing to single register."""
     mock_result.isError.return_value = True
@@ -907,10 +907,10 @@ def test_set_alarm_mode() -> None:
     meter = Em511(1, client)
 
     """Test 1: Set alarm mode"""
-    mock_result.registers = [4117]
+    mock_result.registers = [0x1015]
     client.write_register.return_value = mock_result
     meter.alarm_mode = 1
-    client.write_register.assert_called_once_with(address=4117, value=1, device_id=1)
+    client.write_register.assert_called_once_with(address=0x1015, value=1, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -919,10 +919,10 @@ def test_set_alarm_mode() -> None:
         meter.alarm_mode = 7
 
     """Test 3: Try set alarm mode at maximum value."""
-    mock_result.registers = [4117]
+    mock_result.registers = [0x1015]
     client.write_register.return_value = mock_result
     meter.alarm_mode = 6
-    client.write_register.assert_called_once_with(address=4117, value=6, device_id=1)
+    client.write_register.assert_called_once_with(address=0x1015, value=6, device_id=1)
 
     """Test 4: Should raise exception due to failed writing to single register."""
     mock_result.isError.return_value = True
@@ -939,10 +939,10 @@ def test_set_alarm_delay() -> None:
     meter = Em511(1, client)
 
     """Test 1: Set alarm delay"""
-    mock_result.registers = [4122]
+    mock_result.registers = [0x101A]
     client.write_register.return_value = mock_result
     meter.alarm_delay = 0
-    client.write_register.assert_called_once_with(address=4122, value=0, device_id=1)
+    client.write_register.assert_called_once_with(address=0x101A, value=0, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -951,10 +951,10 @@ def test_set_alarm_delay() -> None:
         meter.alarm_delay = 3601
 
     """Test 3: Try set alarm delay at maximum value."""
-    mock_result.registers = [4122]
+    mock_result.registers = [0x101A]
     client.write_register.return_value = mock_result
     meter.alarm_delay = 3600
-    client.write_register.assert_called_once_with(address=4122, value=3600, device_id=1)
+    client.write_register.assert_called_once_with(address=0x101A, value=3600, device_id=1)
 
     """Test 4: Should raise exception due to failed writing to single register."""
     mock_result.isError.return_value = True
@@ -971,10 +971,10 @@ def test_set_device_id() -> None:
     meter = Em511(1, client)
 
     """Test 1: Set device id"""
-    mock_result.registers = [8192]
+    mock_result.registers = [0x2000]
     client.write_register.return_value = mock_result
     meter.device_id = 123
-    client.write_register.assert_called_once_with(address=8192, value=123, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2000, value=123, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -987,18 +987,18 @@ def test_set_device_id() -> None:
         meter.device_id = 0
 
     """Test 4: Try set device id at maximum value."""
-    mock_result.registers = [8192]
+    mock_result.registers = [0x2000]
     client.write_register.return_value = mock_result
     meter.device_id = 247
-    client.write_register.assert_called_once_with(address=8192, value=247, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2000, value=247, device_id=1)
 
     client.write_register.reset_mock()
 
     """Test 5: Try set device id at lowest value."""
-    mock_result.registers = [8192]
+    mock_result.registers = [0x2000]
     client.write_register.return_value = mock_result
     meter.device_id = 1
-    client.write_register.assert_called_once_with(address=8192, value=1, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2000, value=1, device_id=1)
 
     """Test 6: Should raise exception due to failed writing to single register."""
     mock_result.isError.return_value = True
@@ -1015,10 +1015,10 @@ def test_set_baud_rate() -> None:
     meter = Em511(1, client)
 
     """Test 1: Set baud rate"""
-    mock_result.registers = [8193]
+    mock_result.registers = [0x2001]
     client.write_register.return_value = mock_result
     meter.baud_rate = 2
-    client.write_register.assert_called_once_with(address=8193, value=2, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2001, value=2, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -1031,18 +1031,18 @@ def test_set_baud_rate() -> None:
         meter.baud_rate = 0
 
     """Test 4: Try set baud rate at maximum value."""
-    mock_result.registers = [8193]
+    mock_result.registers = [0x2001]
     client.write_register.return_value = mock_result
     meter.baud_rate = 5
-    client.write_register.assert_called_once_with(address=8193, value=5, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2001, value=5, device_id=1)
 
     client.write_register.reset_mock()
 
     """Test 5: Try set baud rate at lowest value."""
-    mock_result.registers = [8193]
+    mock_result.registers = [0x2001]
     client.write_register.return_value = mock_result
     meter.baud_rate = 1
-    client.write_register.assert_called_once_with(address=8193, value=1, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2001, value=1, device_id=1)
 
     """Test 6: Should raise exception due to failed writing to single register."""
     mock_result.isError.return_value = True
@@ -1059,10 +1059,10 @@ def test_set_parity() -> None:
     meter = Em511(1, client)
 
     """Test 1: Set parity"""
-    mock_result.registers = [8194]
+    mock_result.registers = [0x2002]
     client.write_register.return_value = mock_result
     meter.parity = 1
-    client.write_register.assert_called_once_with(address=8194, value=1, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2002, value=1, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -1075,10 +1075,10 @@ def test_set_parity() -> None:
         meter.parity = 0
 
     """Test 4: Try set parity at maximum value."""
-    mock_result.registers = [8194]
+    mock_result.registers = [0x2002]
     client.write_register.return_value = mock_result
     meter.parity = 2
-    client.write_register.assert_called_once_with(address=8194, value=2, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2002, value=2, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -1097,10 +1097,10 @@ def test_set_stop_bit() -> None:
     meter = Em511(1, client)
 
     """Test 1: Set stop bit"""
-    mock_result.registers = [8195]
+    mock_result.registers = [0x2003]
     client.write_register.return_value = mock_result
     meter.stop_bit = 0
-    client.write_register.assert_called_once_with(address=8195, value=0, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2003, value=0, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -1109,10 +1109,10 @@ def test_set_stop_bit() -> None:
         meter.stop_bit = 2
 
     """Test 3: Try set stop bit at maximum value."""
-    mock_result.registers = [8195]
+    mock_result.registers = [0x2003]
     client.write_register.return_value = mock_result
     meter.stop_bit = 1
-    client.write_register.assert_called_once_with(address=8195, value=1, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2003, value=1, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -1131,10 +1131,10 @@ def test_set_reply_delay() -> None:
     meter = Em511(1, client)
 
     """Test 1: Set reply delay"""
-    mock_result.registers = [8196]
+    mock_result.registers = [0x2004]
     client.write_register.return_value = mock_result
     meter.reply_delay = 0
-    client.write_register.assert_called_once_with(address=8196, value=0, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2004, value=0, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -1143,10 +1143,10 @@ def test_set_reply_delay() -> None:
         meter.reply_delay = 1001
 
     """Test 3: Try set reply delay at maximum value."""
-    mock_result.registers = [8196]
+    mock_result.registers = [0x2004]
     client.write_register.return_value = mock_result
     meter.reply_delay = 1000
-    client.write_register.assert_called_once_with(address=8196, value=1000, device_id=1)
+    client.write_register.assert_called_once_with(address=0x2004, value=1000, device_id=1)
 
     """Test 4: Should raise exception due to failed writing to single register."""
     mock_result.isError.return_value = True
@@ -1163,10 +1163,10 @@ def test_reset_tot_energy_and_run_hour_counter() -> None:
     meter = Em511(1, client)
 
     """Test 1: Reset"""
-    mock_result.registers = [16387]
+    mock_result.registers = [0x4003]
     client.write_register.return_value = mock_result
     meter.reset_tot_energy_and_run_hour_counter()
-    client.write_register.assert_called_once_with(address=16387, value=1, device_id=1)
+    client.write_register.assert_called_once_with(address=0x4003, value=1, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -1185,10 +1185,10 @@ def test_reset_partial_energy_and_hour_counter() -> None:
     meter = Em511(1, client)
 
     """Test 1: Reset"""
-    mock_result.registers = [16388]
+    mock_result.registers = [0x4004]
     client.write_register.return_value = mock_result
     meter.reset_partial_energy_and_hour_counter()
-    client.write_register.assert_called_once_with(address=16388, value=1, device_id=1)
+    client.write_register.assert_called_once_with(address=0x4004, value=1, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -1207,10 +1207,10 @@ def test_reset_dmd_and_dmd_max() -> None:
     meter = Em511(1, client)
 
     """Test 1: Reset"""
-    mock_result.registers = [16389]
+    mock_result.registers = [0x4005]
     client.write_register.return_value = mock_result
     meter.reset_dmd_and_dmd_max()
-    client.write_register.assert_called_once_with(address=16389, value=1, device_id=1)
+    client.write_register.assert_called_once_with(address=0x4005, value=1, device_id=1)
 
     client.write_register.reset_mock()
 
@@ -1232,8 +1232,8 @@ def test_reset_to_factory_settings() -> None:
     """Test 1: Both writes occur"""
     meter.reset_to_factory_settings()
     expected_calls = [
-        call(address=16416, value=0x0A0A, device_id=1),
-        call(address=16416, value=0xC1A0, device_id=1),
+        call(address=0x4020, value=0x0A0A, device_id=1),
+        call(address=0x4020, value=0xC1A0, device_id=1),
     ]
     assert client.write_register.call_args_list == expected_calls
     assert client.write_register.call_count == 2
