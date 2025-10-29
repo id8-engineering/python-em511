@@ -31,8 +31,8 @@ class Em511:
     BAUD_RATE_MAX_VALUE = 5
     PARITY_MIN_VALUE = 1
     PARITY_MAX_VALUE = 2
-    STOP_BIT_MIN_VALUE = 1
-    STOP_BIT_MAX_VALUE = 2
+    STOP_BIT_MIN_VALUE = 0
+    STOP_BIT_MAX_VALUE = 1
     REPLY_DELAY_MIN_VALUE = 0
     REPLY_DELAY_MAX_VALUE = 1000
 
@@ -493,3 +493,21 @@ class Em511:
             msg = f"Invalid parity value: {value}. Must be between 1 and 2."
             raise ValueError(msg)
         self._write_register(self.EM511_REGISTER_PARITY, value)
+
+    @stop_bit.setter
+    def stop_bit(self, value: int) -> None:
+        """Stop bit.
+
+        0=1 stop bit (default), 1=2 stop bits; fixed to 1 if parity=Even.
+
+        Args:
+            value (int): Set stop bit.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+            ValueError: If stop bit value is out of range.
+        """
+        if not (self.STOP_BIT_MIN_VALUE <= value <= self.STOP_BIT_MAX_VALUE):
+            msg = f"Invalid stop bit value: {value}. Must be between 0 and 1."
+            raise ValueError(msg)
+        self._write_register(self.EM511_REGISTER_STOP_BIT, value)

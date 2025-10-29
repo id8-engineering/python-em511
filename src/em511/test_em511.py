@@ -478,19 +478,19 @@ def test_get_stop_bit() -> None:
     meter = Em511(1, client)
 
     """Test 1: should pass"""
-    mock_result.registers = [0x2]
-    client.read_input_registers.return_value = mock_result
-    value = meter.stop_bit
-    assert value == 2
-
-    """Test 2: Should pass."""
     mock_result.registers = [0x1]
     client.read_input_registers.return_value = mock_result
     value = meter.stop_bit
     assert value == 1
 
+    """Test 2: Should pass."""
+    mock_result.registers = [0x0]
+    client.read_input_registers.return_value = mock_result
+    value = meter.stop_bit
+    assert value == 0
+
     """Test 3: Should raise exception due to value not in range"""
-    mock_result.registers = [0x3]
+    mock_result.registers = [0x2]
     client.read_input_registers.return_value = mock_result
     with pytest.raises(ValueError, match="Invalid stop bit value:"):
         _ = meter.stop_bit
@@ -684,5 +684,33 @@ def test_set_parity() -> None:
     client.write_register.return_value = mock_result
     meter.parity = 2
     client.write_register.assert_called_once_with(address=8194, value=2, device_id=1)
+
+    client.write_register.reset_mock()
+
+
+def test_set_stop_bit() -> None:
+    """Test Set stop bit."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: Set stop bit"""
+    mock_result.registers = [8195]
+    client.write_register.return_value = mock_result
+    meter.stop_bit = 0
+    client.write_register.assert_called_once_with(address=8195, value=0, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 2: Try set stop bit out of range."""
+    with pytest.raises(ValueError, match="Invalid stop bit value:"):
+        meter.stop_bit = 2
+
+    """Test 3: Try set stop bit at maximum value."""
+    mock_result.registers = [8195]
+    client.write_register.return_value = mock_result
+    meter.stop_bit = 1
+    client.write_register.assert_called_once_with(address=8195, value=1, device_id=1)
 
     client.write_register.reset_mock()
