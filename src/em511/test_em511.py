@@ -476,6 +476,44 @@ def test_get_stop_bit() -> None:
         _ = meter.stop_bit
 
 
+def test_get_reply_delay() -> None:
+    """Test Get reply delay."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: should pass"""
+    mock_result.registers = [0x3E8]
+    client.read_input_registers.return_value = mock_result
+    value = meter.reply_delay
+    assert value == 1000
+
+    """Test 2: Should pass."""
+    mock_result.registers = [0x0]
+    client.read_input_registers.return_value = mock_result
+    value = meter.reply_delay
+    assert value == 0
+
+    """Test 3: Should raise exception due to value not in range"""
+    mock_result.registers = [0x3E9]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Invalid reply delay value:"):
+        _ = meter.reply_delay
+
+    """Test 4: Should raise exception due to more registers in use than allowed."""
+    mock_result.registers = [0x1860, 0x0023, 0x5743]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Unexpected register count:"):
+        _ = meter.reply_delay
+
+    """Test 5: Should raise exception if input value exceeds maximum value, display shows 'EEE', 16-bit register."""
+    mock_result.registers = [0x7FFF]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Input overflow EEE for 16-bit register: "):
+        _ = meter.reply_delay
+
+
 def test_set_password() -> None:
     """Test Set Password."""
     client = MagicMock()
