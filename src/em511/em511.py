@@ -421,3 +421,22 @@ class Em511:
             msg = f"Invalid password value: {value}. Must be between 0 and 9999."
             raise ValueError(msg)
         self._write_register(self.EM511_REGISTER_PASSWORD, value)
+
+    @device_id.setter
+    def device_id(self, value: int) -> None:
+        """Device id.
+
+        Value:
+            Range 1 - 247
+
+        Args:
+            value (int): Set device id.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+            ValueError: If device id value is out of range.
+        """
+        if not (self.DEVICE_ADDRESS_MIN_VALUE <= value <= self.DEVICE_ADDRESS_MAX_VALUE):
+            msg = f"Invalid device id value: {value}. Must be between 1 and 247."
+            raise ValueError(msg)
+        self._write_register(self.EM511_REGISTER_DEVICE_ID, value)

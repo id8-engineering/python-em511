@@ -546,3 +546,41 @@ def test_set_password() -> None:
     client.write_register.return_value = mock_result
     meter.password = 0
     client.write_register.assert_called_once_with(address=4096, value=0, device_id=1)
+
+
+def test_set_device_id() -> None:
+    """Test Set device id."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: Set device id"""
+    mock_result.registers = [8192]
+    client.write_register.return_value = mock_result
+    meter.device_id = 123
+    client.write_register.assert_called_once_with(address=8192, value=123, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 2: Try set device id out of range."""
+    with pytest.raises(ValueError, match="Invalid device id value:"):
+        meter.device_id = 248
+
+    """Test 3: Try set device id out of range."""
+    with pytest.raises(ValueError, match="Invalid device id value:"):
+        meter.device_id = 0
+
+    """Test 4: Try set device id at maximum value."""
+    mock_result.registers = [8192]
+    client.write_register.return_value = mock_result
+    meter.device_id = 247
+    client.write_register.assert_called_once_with(address=8192, value=247, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 5: Try set device id at lowest value."""
+    mock_result.registers = [8192]
+    client.write_register.return_value = mock_result
+    meter.device_id = 1
+    client.write_register.assert_called_once_with(address=8192, value=1, device_id=1)
