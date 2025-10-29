@@ -392,7 +392,33 @@ class Em511:
         regs = self._read_input_registers(self.EM511_REGISTER_ALARM_STATE, self.INT16_REG_COUNT)
         value = self._unpack(regs, self.EM511_REGISTER_ALARM_STATE)
         if not (self.ALARM_STATE_MIN_VALUE <= value <= self.ALARM_STATE_MAX_VALUE):
-            msg = f"Invalid alarm state value: {value}. Must be between 0 and 1."
+            msg = f"Invalid alarm state value: {value}. Must be between 1 and 6."
+            raise ValueError(msg)
+        return value
+
+    @property
+    def alarm_mode(self) -> int:
+        """Alarm mode.
+
+        1=Active Power(kW)
+        2=Apparent Power (kVA) (default)
+        3=Reactive Power (kVAR)
+        4=Power Factor
+        5=Current (A)
+        6=Voltages (V)
+
+        Returns:
+            int: Current alarm mode.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ValueError: If alarm state is out of range.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_ALARM_MODE, self.INT16_REG_COUNT)
+        value = self._unpack(regs, self.EM511_REGISTER_ALARM_MODE)
+        if not (self.ALARM_MODE_MIN_VALUE <= value <= self.ALARM_MODE_MAX_VALUE):
+            msg = f"Invalid alarm mode value: {value}. Must be between 1 and 6."
             raise ValueError(msg)
         return value
 
