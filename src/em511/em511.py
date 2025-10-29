@@ -52,6 +52,7 @@ class Em511:
     EM511_REGISTER_HOUR_COUNTER = 0x2C
     EM511_REGISTER_LIFETIME_COUNTER = 0x30
     EM511_REGISTER_HOUR_COUNTER_PART = 0x36
+    EM511_REGISTER_DMD_INTEGRATION_TIME = 0x1010
     EM511_REGISTER_DEVICE_ID = 0x2000
     EM511_REGISTER_BAUD_RATE = 0x2001
     EM511_REGISTER_PARITY = 0x2002
@@ -61,7 +62,6 @@ class Em511:
     EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER = 0x4004
     EM511_REGISTER_RESET_DMD_AND_DMD_MAX = 0x4005
     EM511_REGISTER_RESET_TO_FACTORY_SETTINGS = 0x4020
-    EM511_REGISTER_DMD_INTEGRATION_TIME = 0x1010
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -495,6 +495,25 @@ class Em511:
             msg = f"Invalid reply delay value: {value}. Must be between 0 and 1000."
             raise ValueError(msg)
         return value
+
+    @dmd_integration_time.setter
+    def dmd_integration_time(self, value: int) -> None:
+        """Demand integration time.
+
+        Value: 0=1 min, 1=5 min, 2=10 min, 3=15 min(default)
+               4=20 min, 5=30 min, 6=30 min.
+
+        Args:
+            value (int): Set demand integration time.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+            ValueError: If demand integration time value is out of range.
+        """
+        if not (self.DMD_TIME_MIN_VALUE <= value <= self.DMD_TIME_MAX_VALUE):
+            msg = f"Invalid demand integration time value: {value}. Must be between 0 and 6."
+            raise ValueError(msg)
+        self._write_register(self.EM511_REGISTER_DMD_INTEGRATION_TIME, value)
 
     @password.setter
     def password(self, value: int) -> None:

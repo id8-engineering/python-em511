@@ -681,6 +681,38 @@ def test_get_reply_delay() -> None:
         _ = meter.reply_delay
 
 
+def test_set_dmd_integration_time() -> None:
+    """Test Set demand integration time."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: Set demand integration time"""
+    mock_result.registers = [4112]
+    client.write_register.return_value = mock_result
+    meter.dmd_integration_time = 0
+    client.write_register.assert_called_once_with(address=4112, value=0, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 2: Try set demand integration time out of range."""
+    with pytest.raises(ValueError, match="Invalid demand integration time value:"):
+        meter.dmd_integration_time = 7
+
+    """Test 3: Try set demand integration time at maximum value."""
+    mock_result.registers = [4112]
+    client.write_register.return_value = mock_result
+    meter.dmd_integration_time = 6
+    client.write_register.assert_called_once_with(address=4112, value=6, device_id=1)
+
+    """Test 4: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.dmd_integration_time = 1
+
+
 def test_set_password() -> None:
     """Test Set Password."""
     client = MagicMock()
