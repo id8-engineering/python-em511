@@ -107,7 +107,7 @@ class Em511:
 
         if result.isError():
             msg = (
-                "Failed to write to single register."
+                "Failed to write to single register: "
                 f"device_address={self.device_address} address={address} count={value}"
             )
             raise ModbusException(msg)

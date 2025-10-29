@@ -6,6 +6,7 @@ from decimal import Decimal
 from unittest.mock import MagicMock
 
 import pytest
+from pymodbus import ModbusException
 
 from em511 import Em511
 
@@ -579,6 +580,12 @@ def test_set_password() -> None:
     meter.password = 0
     client.write_register.assert_called_once_with(address=4096, value=0, device_id=1)
 
+    """Test 5: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.password = 1
+
 
 def test_set_device_id() -> None:
     """Test Set device id."""
@@ -616,6 +623,12 @@ def test_set_device_id() -> None:
     client.write_register.return_value = mock_result
     meter.device_id = 1
     client.write_register.assert_called_once_with(address=8192, value=1, device_id=1)
+
+    """Test 6: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.device_id = 1
 
 
 def test_set_baud_rate() -> None:
@@ -655,6 +668,12 @@ def test_set_baud_rate() -> None:
     meter.baud_rate = 1
     client.write_register.assert_called_once_with(address=8193, value=1, device_id=1)
 
+    """Test 6: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.baud_rate = 1
+
 
 def test_set_parity() -> None:
     """Test Set parity."""
@@ -687,6 +706,12 @@ def test_set_parity() -> None:
 
     client.write_register.reset_mock()
 
+    """Test 5: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.parity = 1
+
 
 def test_set_stop_bit() -> None:
     """Test Set stop bit."""
@@ -715,6 +740,12 @@ def test_set_stop_bit() -> None:
 
     client.write_register.reset_mock()
 
+    """Test 4: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.stop_bit = 1
+
 
 def test_set_reply_delay() -> None:
     """Test Set reply delay."""
@@ -740,3 +771,9 @@ def test_set_reply_delay() -> None:
     client.write_register.return_value = mock_result
     meter.reply_delay = 1000
     client.write_register.assert_called_once_with(address=8196, value=1000, device_id=1)
+
+    """Test 4: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.reply_delay = 1
