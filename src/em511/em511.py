@@ -56,6 +56,7 @@ class Em511:
     EM511_REGISTER_STOP_BIT = 0x2003
     EM511_REGISTER_REPLY_DELAY = 0x2004
     EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER = 0x4003
+    EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER = 0x4004
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -588,3 +589,13 @@ class Em511:
             ModbusException: If failed to write to single register.
         """
         self._write_register(self.EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER, 1)
+
+    def reset_partial_energy_and_hour_counter(self) -> None:
+        """Reset partial energy + partial run hour counters.
+
+        Writes 1 to execute.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+        """
+        self._write_register(self.EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER, 1)
