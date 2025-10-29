@@ -654,3 +654,35 @@ def test_set_baud_rate() -> None:
     client.write_register.return_value = mock_result
     meter.baud_rate = 1
     client.write_register.assert_called_once_with(address=8193, value=1, device_id=1)
+
+
+def test_set_parity() -> None:
+    """Test Set parity."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: Set parity"""
+    mock_result.registers = [8194]
+    client.write_register.return_value = mock_result
+    meter.parity = 1
+    client.write_register.assert_called_once_with(address=8194, value=1, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 2: Try set parity out of range."""
+    with pytest.raises(ValueError, match="Invalid parity value:"):
+        meter.parity = 3
+
+    """Test 3: Try set parity out of range."""
+    with pytest.raises(ValueError, match="Invalid parity value:"):
+        meter.parity = 0
+
+    """Test 4: Try set parity at maximum value."""
+    mock_result.registers = [8194]
+    client.write_register.return_value = mock_result
+    meter.parity = 2
+    client.write_register.assert_called_once_with(address=8194, value=2, device_id=1)
+
+    client.write_register.reset_mock()

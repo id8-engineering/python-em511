@@ -474,3 +474,22 @@ class Em511:
             msg = f"Invalid baud rate value: {value}. Must be between 1 and 5."
             raise ValueError(msg)
         self._write_register(self.EM511_REGISTER_BAUD_RATE, value)
+
+    @parity.setter
+    def parity(self, value: int) -> None:
+        """Parity.
+
+        1=None, 2=Even (default=1).
+
+
+        Args:
+            value (int): Set parity.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+            ValueError: If parity value is out of range.
+        """
+        if not (self.PARITY_MIN_VALUE <= value <= self.PARITY_MAX_VALUE):
+            msg = f"Invalid parity value: {value}. Must be between 1 and 2."
+            raise ValueError(msg)
+        self._write_register(self.EM511_REGISTER_PARITY, value)
