@@ -35,6 +35,8 @@ class Em511:
     STOP_BIT_MAX_VALUE = 1
     REPLY_DELAY_MIN_VALUE = 0
     REPLY_DELAY_MAX_VALUE = 1000
+    DMD_TIME_MIN_VALUE = 0
+    DMD_TIME_MAX_VALUE = 6
 
     EM511_REGISTER_V = 0x0
     EM511_REGISTER_A = 0x2
@@ -59,6 +61,7 @@ class Em511:
     EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER = 0x4004
     EM511_REGISTER_RESET_DMD_AND_DMD_MAX = 0x4005
     EM511_REGISTER_RESET_TO_FACTORY_SETTINGS = 0x4020
+    EM511_REGISTER_DMD_INTEGRATION_TIME = 0x1010
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -362,6 +365,28 @@ class Em511:
         value = self._unpack(regs, self.EM511_REGISTER_PASSWORD)
         if not (self.PASSWORD_MIN_VALUE <= value <= self.PASSWORD_MAX_VALUE):
             msg = f"Invalid password value: {value}. Must be between 0 and 9999."
+            raise ValueError(msg)
+        return value
+
+    @property
+    def dmd_integration_time(self) -> int:
+        """Demand integration time.
+
+        0=1min, 1=5min, 2=10min, 3=15min,
+        4=20min, 5=30min, 6=60min (default=3).
+
+        Returns:
+            int: Current demand integration time.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ValueError: If demand integration time is out of range.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_DMD_INTEGRATION_TIME, self.INT32_REG_COUNT)
+        value = self._unpack(regs, self.EM511_REGISTER_DMD_INTEGRATION_TIME)
+        if not (self.DMD_TIME_MIN_VALUE <= value <= self.DMD_TIME_MAX_VALUE):
+            msg = f"Invalid demand integration time value: {value}. Must be between 0 and 6."
             raise ValueError(msg)
         return value
 

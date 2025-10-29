@@ -453,6 +453,44 @@ def test_get_password() -> None:
         _ = meter.password
 
 
+def test_get_dmd_integration_time() -> None:
+    """Test Get dmd_integration_time."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: should pass"""
+    mock_result.registers = [0x0006, 0x0000]
+    client.read_input_registers.return_value = mock_result
+    value = meter.dmd_integration_time
+    assert value == int("6")
+
+    """Test 2: Should pass."""
+    mock_result.registers = [0x0000, 0x0000]
+    client.read_input_registers.return_value = mock_result
+    value = meter.dmd_integration_time
+    assert value == int("0")
+
+    """Test 3: Should raise exception due to value not in range"""
+    mock_result.registers = [0x0007, 0x0000]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Invalid demand integration time value: "):
+        _ = meter.dmd_integration_time
+
+    """Test 4: Should raise exception due to more registers in use than allowed."""
+    mock_result.registers = [0x1860, 0x0023, 0x4244]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Unexpected register count:"):
+        _ = meter.dmd_integration_time
+
+    """Test 5: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
+    mock_result.registers = [0xFFFF, 0x7FFF]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
+        _ = meter.dmd_integration_time
+
+
 def test_get_device_id() -> None:
     """Test Get device id/address."""
     client = MagicMock()
