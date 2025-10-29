@@ -55,6 +55,7 @@ class Em511:
     EM511_REGISTER_PARITY = 0x2002
     EM511_REGISTER_STOP_BIT = 0x2003
     EM511_REGISTER_REPLY_DELAY = 0x2004
+    EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER = 0x4003
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -577,3 +578,13 @@ class Em511:
             msg = f"Invalid reply delay value: {value}. Must be between 0 and 1000."
             raise ValueError(msg)
         self._write_register(self.EM511_REGISTER_REPLY_DELAY, value)
+
+    def reset_tot_energy_and_run_hour_counter(self) -> None:
+        """Reset total energy + total run hour counters (excluding lifetime).
+
+        Writes 1 to execute.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+        """
+        self._write_register(self.EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER, 1)
