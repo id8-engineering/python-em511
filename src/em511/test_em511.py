@@ -823,6 +823,38 @@ def test_set_alarm_state() -> None:
         meter.alarm_state = 1
 
 
+def test_set_alarm_mode() -> None:
+    """Test Set alarm mode."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: Set alarm mode"""
+    mock_result.registers = [4117]
+    client.write_register.return_value = mock_result
+    meter.alarm_mode = 1
+    client.write_register.assert_called_once_with(address=4117, value=1, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 2: Try set alarm mode out of range."""
+    with pytest.raises(ValueError, match="Invalid alarm mode value:"):
+        meter.alarm_mode = 7
+
+    """Test 3: Try set alarm mode at maximum value."""
+    mock_result.registers = [4117]
+    client.write_register.return_value = mock_result
+    meter.alarm_mode = 6
+    client.write_register.assert_called_once_with(address=4117, value=6, device_id=1)
+
+    """Test 4: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.alarm_mode = 1
+
+
 def test_get_alarm_mode() -> None:
     """Test Get alarm_mode."""
     client = MagicMock()

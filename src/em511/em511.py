@@ -607,6 +607,27 @@ class Em511:
             raise ValueError(msg)
         self._write_register(self.EM511_REGISTER_ALARM_STATE, value)
 
+    @alarm_mode.setter
+    def alarm_mode(self, value: int) -> None:
+        """Alarm mode.
+
+        Value:
+        1=Active Power [kW], 2=Apparent Power [kVA],
+        3=Reactive Power [kVAR], 4=Power Factor,
+        5=Currents [A], 6=Voltages [V] (default=1)
+
+        Args:
+            value (int): Set alarm mode.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+            ValueError: If alarm mode  value is out of range.
+        """
+        if not (self.ALARM_MODE_MIN_VALUE <= value <= self.ALARM_MODE_MAX_VALUE):
+            msg = f"Invalid alarm mode value: {value}. Must be between 1 and 6."
+            raise ValueError(msg)
+        self._write_register(self.EM511_REGISTER_ALARM_MODE, value)
+
     @device_id.setter
     def device_id(self, value: int) -> None:
         """Device id.
