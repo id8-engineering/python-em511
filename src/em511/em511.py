@@ -653,6 +653,25 @@ class Em511:
             raise ValueError(msg)
         self._write_register(self.EM511_REGISTER_ALARM_MODE, value)
 
+    @alarm_delay.setter
+    def alarm_delay(self, value: int) -> None:
+        """Alarm delay.
+
+        Value:
+        Range 0 - 3600 s(Default=0).
+
+        Args:
+            value (int): Set Alarm Delay.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+            ValueError: If alarm delay value is out of range.
+        """
+        if not (self.ALARM_DELAY_MIN_VALUE <= value <= self.ALARM_DELAY_MAX_VALUE):
+            msg = f"Invalid alarm delay value: {value}. Must be between 0 and 3600."
+            raise ValueError(msg)
+        self._write_register(self.EM511_REGISTER_ALARM_DELAY, value)
+
     @device_id.setter
     def device_id(self, value: int) -> None:
         """Device id.

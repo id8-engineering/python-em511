@@ -931,6 +931,38 @@ def test_set_alarm_mode() -> None:
         meter.alarm_mode = 1
 
 
+def test_set_alarm_delay() -> None:
+    """Test Set alarm delay."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: Set alarm delay"""
+    mock_result.registers = [4122]
+    client.write_register.return_value = mock_result
+    meter.alarm_delay = 0
+    client.write_register.assert_called_once_with(address=4122, value=0, device_id=1)
+
+    client.write_register.reset_mock()
+
+    """Test 2: Try set alarm delay out of range."""
+    with pytest.raises(ValueError, match="Invalid alarm delay value:"):
+        meter.alarm_delay = 3601
+
+    """Test 3: Try set alarm delay at maximum value."""
+    mock_result.registers = [4122]
+    client.write_register.return_value = mock_result
+    meter.alarm_delay = 3600
+    client.write_register.assert_called_once_with(address=4122, value=3600, device_id=1)
+
+    """Test 4: Should raise exception due to failed writing to single register."""
+    mock_result.isError.return_value = True
+    client.write_register.return_value = mock_result
+    with pytest.raises(ModbusException, match="Failed to write to single register:"):
+        meter.alarm_delay = 1
+
+
 def test_set_device_id() -> None:
     """Test Set device id."""
     client = MagicMock()
