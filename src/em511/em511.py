@@ -27,6 +27,8 @@ class Em511:
     INPUT_MAX_VALUE_16 = 0x7FFF
     DEVICE_ADDRESS_MAX_VALUE = 247
     DEVICE_ADDRESS_MIN_VALUE = 1
+    BAUD_RATE_MIN_VALUE = 1
+    BAUD_RATE_MAX_VALUE = 5
 
     EM511_REGISTER_V = 0x0
     EM511_REGISTER_A = 0x2
@@ -39,6 +41,7 @@ class Em511:
     EM511_REGISTER_KWH_PARTIAL = 0x14
     EM511_REGISTER_HOUR_COUNTER = 0x2C
     EM511_REGISTER_DEVICE_ID = 0x2000
+    EM511_REGISTER_BAUD_RATE = 0x2001
 
     SCALE_10 = 10
     SCALE_100 = 100
@@ -303,6 +306,28 @@ class Em511:
         value = self._unpack(regs, self.EM511_REGISTER_DEVICE_ID)
         if not (self.DEVICE_ADDRESS_MIN_VALUE <= value <= self.DEVICE_ADDRESS_MAX_VALUE):
             msg = f"Invalid device address value: {value}. Must be between 1 and 247."
+            raise ValueError(msg)
+        return value
+
+    @property
+    def baud_rate(self) -> int:
+        """Baud rate.
+
+        1=9.6kbps, 2=19.2kbps, 3=38.4kbps,
+        4=57.6kbps, 5=115.2kbps (default=1)
+
+        Returns:
+            Int: Current baud rate.
+
+        Raises:
+            ValueError: If input is at max value or above.
+            ValueError: If baud rate is out of range.
+            ModbusException: If failed to read input register.
+        """
+        regs = self._read_input_registers(self.EM511_REGISTER_BAUD_RATE, self.INT16_REG_COUNT)
+        value = self._unpack(regs, self.EM511_REGISTER_BAUD_RATE)
+        if not (self.BAUD_RATE_MIN_VALUE <= value <= self.BAUD_RATE_MAX_VALUE):
+            msg = f"Invalid baud rate value: {value}. Must be between 1 and 5."
             raise ValueError(msg)
         return value
 

@@ -362,6 +362,44 @@ def test_get_device_id() -> None:
         _ = meter.device_id
 
 
+def test_get_baud_rate() -> None:
+    """Test Get baud_rate."""
+    client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.isError.return_value = False
+    meter = Em511(1, client)
+
+    """Test 1: should pass"""
+    mock_result.registers = [0x5]
+    client.read_input_registers.return_value = mock_result
+    value = meter.baud_rate
+    assert value == 5
+
+    """Test 2: Should pass."""
+    mock_result.registers = [0x1]
+    client.read_input_registers.return_value = mock_result
+    value = meter.baud_rate
+    assert value == 1
+
+    """Test 3: Should raise exception due to value not in range"""
+    mock_result.registers = [0x6]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Invalid baud rate value:"):
+        _ = meter.baud_rate
+
+    """Test 4: Should raise exception due to more registers in use than allowed."""
+    mock_result.registers = [0x1860, 0x0023, 0x5743]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Unexpected register count:"):
+        _ = meter.baud_rate
+
+    """Test 5: Should raise exception if input value exceeds maximum value, display shows 'EEE', 16-bit register."""
+    mock_result.registers = [0x7FFF]
+    client.read_input_registers.return_value = mock_result
+    with pytest.raises(ValueError, match="Input overflow EEE for 16-bit register: "):
+        _ = meter.baud_rate
+
+
 def test_set_password() -> None:
     """Test Set Password."""
     client = MagicMock()
