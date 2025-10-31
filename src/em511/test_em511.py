@@ -9,6 +9,27 @@ import pytest
 from em511 import Em511
 
 
+def test_unpack() -> None:
+    """Test unpack."""
+    client = MagicMock()
+    meter = Em511(1, client)
+
+    """Test 1: Should raise exception due to more registers in use than allowed."""
+    registers = [0x1860, 0x0023, 0x4244]
+    with pytest.raises(ValueError, match="Unexpected register count:"):
+        _ = meter._unpack(registers, 0x0001)  # noqa: SLF001
+
+    """Test 2: Should raise exception due to 16-bit register overflow"""
+    registers = [0x7FFF]
+    with pytest.raises(ValueError, match="Input overflow EEE for 16-bit register: "):
+        _ = meter._unpack(registers, 0x0001)  # noqa: SLF001
+
+    """Test 3: Should raise exception due to 32-bit register overflow"""
+    registers = [0xFFFF, 0x7FFF]
+    with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
+        _ = meter._unpack(registers, 0x0001)  # noqa: SLF001
+
+
 def test_V() -> None:
     """Test Get v."""
     client = MagicMock()
@@ -27,18 +48,6 @@ def test_V() -> None:
     client.read_input_registers.return_value = mock_result
     value = meter.V
     assert value == 10500
-
-    """Test 3: Should raise exception due to more registers in use than allowed."""
-    mock_result.registers = [0x1860, 0x0023, 0x4244]
-    client.read_input_registers.return_value = mock_result
-    with pytest.raises(ValueError, match="Unexpected register count:"):
-        _ = meter.V
-
-    """Test 6: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
-    mock_result.registers = [0xFFFF, 0x7FFF]
-    client.read_input_registers.return_value = mock_result
-    with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
-        _ = meter.V
 
 
 def test_get_A() -> None:
@@ -60,18 +69,6 @@ def test_get_A() -> None:
     value = meter.A
     assert value == 2300
 
-    """Test 3: Should raise exception due to more registers in use than allowed."""
-    mock_result.registers = [0x1860, 0x0023, 0x4244]
-    client.read_input_registers.return_value = mock_result
-    with pytest.raises(ValueError, match="Unexpected register count:"):
-        _ = meter.A
-
-    """Test 6: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
-    mock_result.registers = [0xFFFF, 0x7FFF]
-    client.read_input_registers.return_value = mock_result
-    with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
-        _ = meter.A
-
 
 def test_get_password() -> None:
     """Test Get password."""
@@ -86,16 +83,10 @@ def test_get_password() -> None:
     value = meter.password
     assert value == 1234
 
-    """Test 2: Should raise exception if input value exceeds maximum value, display shows 'EEE', 32-bit register."""
-    mock_result.registers = [0xFFFF, 0x7FFF]
-    client.read_input_registers.return_value = mock_result
-    with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
-        _ = meter.password
-
-    """Test 3: Should raise exception if password return a value out of its range of 0-9999."""
+    """Test 2: Should raise exception if password return a value out of its range of 0-9999."""
     mock_result.registers = [0x186A0, 0x0000]
     client.read_input_registers.return_value = mock_result
-    with pytest.raises(ValueError, match="Invalid password value: "):
+    with pytest.raises(ValueError, match="Invalid value for"):
         _ = meter.password
 
 
@@ -115,7 +106,7 @@ def test_set_password() -> None:
     client.write_register.reset_mock()
 
     """Test 2: Try set password out of range."""
-    with pytest.raises(ValueError, match="Invalid password value:"):
+    with pytest.raises(ValueError, match="Invalid value for"):
         meter.password = 12345
 
     """Test 3: Try set password at maximum value."""
