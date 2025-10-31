@@ -125,6 +125,11 @@ class Em511:
     INPUT_MAX_VALUE_32 = 0x7FFFFFFF
     INPUT_MAX_VALUE_16 = 0x7FFF
 
+    EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER = 0x4003
+    EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER = 0x4004
+    EM511_REGISTER_RESET_DMD_AND_DMD_MAX = 0x4005
+    EM511_REGISTER_RESET_TO_FACTORY_SETTINGS = 0x4020
+
     _register_specs: Final[dict[str, RegisterSpec]] = {
         "V": RegisterSpec(
             address=0x0000,
@@ -295,6 +300,47 @@ class Em511:
         ),
     }
 
+    def reset_tot_energy_and_run_hour_counter(self) -> None:
+        """Reset total energy + total run hour counters (excluding lifetime).
+
+        Writes 1 to execute.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+        """
+        self.write_register(self.EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER, 1)
+
+    def reset_partial_energy_and_hour_counter(self) -> None:
+        """Reset partial energy + partial run hour counters.
+
+        Writes 1 to execute.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+        """
+        self.write_register(self.EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER, 1)
+
+    def reset_dmd_and_dmd_max(self) -> None:
+        """Reset DMD and DMD max values.
+
+        Write 1 to execute.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+        """
+        self.write_register(self.EM511_REGISTER_RESET_DMD_AND_DMD_MAX, 1)
+
+    def reset_to_factory_settings(self) -> None:
+        """Factory Restore (Default settings).
+
+        Write 0x0A0A=2570, then within 1s write 0xC1A0=49568 to trigger reset.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+        """
+        self.write_register(self.EM511_REGISTER_RESET_TO_FACTORY_SETTINGS, 0x0A0A)
+        self.write_register(self.EM511_REGISTER_RESET_TO_FACTORY_SETTINGS, 0xC1A0)
+
     def __init__(self, device_address: int, client: ModbusSerialClient) -> None:
         """Initialize an Em511 driver instance.
 
@@ -364,6 +410,10 @@ class Em511:
                 f"device_address={self.device_address} address={address} value={value}"
             )
             raise ModbusException(msg)
+
+    def write_register(self, address: int, value: int) -> None:
+        """Public wrapper for `_write_register`."""
+        self._write_register(address, value)
 
     def _unpack(self, regs: list[int], address: int) -> int:
         """Unpack raw Modbus register data into an integer value.
