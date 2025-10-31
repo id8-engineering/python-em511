@@ -30,7 +30,7 @@ class RegisterSpec:
         count (int): Number of consecutive registers to read.
         scale (int): Scaling factor to apply to the raw integer value.
         decimals (int): Number of decimal places to round the scaled value to.
-        writable (bool): Whether this register can be written to.
+        writeable (bool): Whether this register can be written to.
         range (bool): Whether range validation should be performed.
         min (int): Minimum allowed value for range validation.
         max (int): Maximum allowed value for range validation.
@@ -43,7 +43,7 @@ class RegisterSpec:
     range: bool = False
     min: int = 0
     max: int = 0x7FFFFFFF
-    writable: bool = False
+    writeable: bool = False
     return_type: type[int] | type[Decimal] = Decimal
 
 
@@ -51,7 +51,7 @@ def register_properties(cls: T) -> T:
     """Class decorator that auto-generates @property accessors for Modbus registers.
 
     For each entry in `cls._register_specs`, this decorator dynamically creates
-    a corresponding @property getter, and optionally a setter if `writable=True`.
+    a corresponding @property getter, and optionally a setter if `writeable=True`.
 
     The generated getter automatically calls `_read_register(register_name)`
     and the setter calls `_write_register(address, value)` with range validation
@@ -90,7 +90,7 @@ def register_properties(cls: T) -> T:
                 AttributeError: If the register is read-only.
                 ValueError: If the written value is outside its defined range.
             """
-            if not _spec.writable:
+            if not _spec.writeable:
                 msg = f"Register '{_name}' is read-only."
                 raise AttributeError(msg)
 
@@ -99,9 +99,9 @@ def register_properties(cls: T) -> T:
                 raise ValueError(msg)
             self._write_register(_spec.address, int(value))
 
-        prop = property(getter, setter) if spec.writable else property(getter)
+        prop = property(getter, setter) if spec.writeable else property(getter)
 
-        prop.__doc__ = f"{name} ({'read/write' if spec.writable else 'read-only'})" + (
+        prop.__doc__ = f"{name} ({'read/write' if spec.writeable else 'read-only'})" + (
             f" range=[{spec.min}, {spec.max}]" if spec.range else ""
         )
 
@@ -125,10 +125,90 @@ class Em511:
     INPUT_MAX_VALUE_32 = 0x7FFFFFFF
     INPUT_MAX_VALUE_16 = 0x7FFF
 
+    EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER = 0x4003
+    EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER = 0x4004
+    EM511_REGISTER_RESET_DMD_AND_DMD_MAX = 0x4005
+    EM511_REGISTER_RESET_TO_FACTORY_SETTINGS = 0x4020
+
     _register_specs: Final[dict[str, RegisterSpec]] = {
-        "V": RegisterSpec(address=0x0000, count=2, decimals=1, scale=10),
-        "A": RegisterSpec(address=0x0002, count=2, decimals=3, scale=1000),
-        "W": RegisterSpec(address=0x0004, count=2, decimals=1, scale=10),
+        "V": RegisterSpec(
+            address=0x0000,
+            count=2,
+            decimals=1,
+            scale=10,
+        ),
+        "A": RegisterSpec(
+            address=0x0002,
+            count=2,
+            decimals=3,
+            scale=1000,
+        ),
+        "A_dmd": RegisterSpec(
+            address=0x003A,
+            count=2,
+            decimals=3,
+            scale=1000,
+        ),
+        "A_dmd_peak": RegisterSpec(
+            address=0x003C,
+            count=2,
+            decimals=3,
+            scale=1000,
+        ),
+        "W": RegisterSpec(
+            address=0x0004,
+            count=2,
+            decimals=1,
+            scale=10,
+        ),
+        "W_dmd": RegisterSpec(
+            address=0x000A,
+            count=2,
+            decimals=1,
+            scale=10,
+        ),
+        "W_dmd_peak": RegisterSpec(
+            address=0x000C,
+            count=2,
+            decimals=1,
+            scale=10,
+        ),
+        "Hz": RegisterSpec(
+            address=0x000F,
+            count=1,
+            decimals=1,
+            scale=10,
+        ),
+        "kwh_tot": RegisterSpec(
+            address=0x0010,
+            count=2,
+            decimals=1,
+            scale=10,
+        ),
+        "kwh_partial": RegisterSpec(
+            address=0x0014,
+            count=2,
+            decimals=1,
+            scale=10,
+        ),
+        "hour_counter": RegisterSpec(
+            address=0x002C,
+            count=2,
+            decimals=2,
+            scale=100,
+        ),
+        "lifetime_counter": RegisterSpec(
+            address=0x0030,
+            count=2,
+            decimals=2,
+            scale=100,
+        ),
+        "hour_counter_part": RegisterSpec(
+            address=0x0036,
+            count=2,
+            decimals=2,
+            scale=100,
+        ),
         "password": RegisterSpec(
             address=0x1000,
             count=1,
@@ -136,10 +216,130 @@ class Em511:
             min=0,
             max=9999,
             return_type=int,
-            writable=True,
+            writeable=True,
         ),
-        "alarm_status": RegisterSpec(address=0x0307, count=1, return_type=int),
+        "alarm_status": RegisterSpec(
+            address=0x0306,
+            count=1,
+            range=True,
+            min=0,
+            max=1,
+            return_type=int,
+        ),
+        "alarm_mode": RegisterSpec(
+            address=0x1015,
+            count=1,
+            range=True,
+            min=1,
+            max=6,
+            return_type=int,
+            writeable=True,
+        ),
+        "alarm_delay": RegisterSpec(
+            address=0x101A,
+            count=1,
+            range=True,
+            min=0,
+            max=3600,
+            return_type=int,
+            writeable=True,
+        ),
+        "dmd_integration_time": RegisterSpec(
+            address=0x1010,
+            count=2,
+            range=True,
+            min=0,
+            max=6,
+            return_type=int,
+            writeable=True,
+        ),
+        "device_id": RegisterSpec(
+            address=0x2000,
+            count=1,
+            range=True,
+            min=1,
+            max=247,
+            return_type=int,
+            writeable=True,
+        ),
+        "baud_rate": RegisterSpec(
+            address=0x2001,
+            count=1,
+            range=True,
+            min=1,
+            max=5,
+            return_type=int,
+            writeable=True,
+        ),
+        "parity": RegisterSpec(
+            address=0x2002,
+            count=1,
+            range=True,
+            min=1,
+            max=2,
+            return_type=int,
+            writeable=True,
+        ),
+        "stop_bit": RegisterSpec(
+            address=0x2003,
+            count=1,
+            range=True,
+            min=0,
+            max=1,
+            return_type=int,
+            writeable=True,
+        ),
+        "reply_delay": RegisterSpec(
+            address=0x2004,
+            count=1,
+            range=True,
+            min=0,
+            max=1000,
+            return_type=int,
+            writeable=True,
+        ),
     }
+
+    def reset_tot_energy_and_run_hour_counter(self) -> None:
+        """Reset total energy + total run hour counters (excluding lifetime).
+
+        Writes 1 to execute.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+        """
+        self.write_register(self.EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER, 1)
+
+    def reset_partial_energy_and_hour_counter(self) -> None:
+        """Reset partial energy + partial run hour counters.
+
+        Writes 1 to execute.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+        """
+        self.write_register(self.EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER, 1)
+
+    def reset_dmd_and_dmd_max(self) -> None:
+        """Reset DMD and DMD max values.
+
+        Write 1 to execute.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+        """
+        self.write_register(self.EM511_REGISTER_RESET_DMD_AND_DMD_MAX, 1)
+
+    def reset_to_factory_settings(self) -> None:
+        """Factory Restore (Default settings).
+
+        Write 0x0A0A=2570, then within 1s write 0xC1A0=49568 to trigger reset.
+
+        Raises:
+            ModbusException: If failed to write to single register.
+        """
+        self.write_register(self.EM511_REGISTER_RESET_TO_FACTORY_SETTINGS, 0x0A0A)
+        self.write_register(self.EM511_REGISTER_RESET_TO_FACTORY_SETTINGS, 0xC1A0)
 
     def __init__(self, device_address: int, client: ModbusSerialClient) -> None:
         """Initialize an Em511 driver instance.
@@ -210,6 +410,10 @@ class Em511:
                 f"device_address={self.device_address} address={address} value={value}"
             )
             raise ModbusException(msg)
+
+    def write_register(self, address: int, value: int) -> None:
+        """Public wrapper for `_write_register`."""
+        self._write_register(address, value)
 
     def _unpack(self, regs: list[int], address: int) -> int:
         """Unpack raw Modbus register data into an integer value.
