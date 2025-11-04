@@ -33,16 +33,24 @@ This is to ensure that:
 
 Read [How to Write a Git Commit Message](https://cbea.ms/git-commit/), for more
 on this topic.
-Sign your work
---------------
 
-This project is licensed under an open source license. To ensure license compatibility and traceability, we need to keep track of the origin of all commits and make sure they comply with the license terms.  
-To achieve this, we follow the same procedure as used by the Linux kernel and many other open source projects: **every commit must be signed off**.
+### Sign your work
 
-The sign-off is a simple line added at the end of your commit message which certifies that you wrote the code or otherwise have the right to pass it on as an open source contribution.  
-The rules are simple: if you can certify the following statement (from [developercertificate.org](http://developercertificate.org)), then you can sign off your work.
+This project is licensed under an open source license. To ensure license
+compatibility and traceability, we need to keep track of the origin of all
+commits and make sure they comply with the license terms.  To achieve this, we
+follow the same procedure as used by the Linux kernel and many other open source
+projects: **every commit must be signed off**.
 
-### Developer Certificate of Origin
+The sign-off is a simple line added at the end of your commit message which
+certifies that you wrote the code or otherwise have the right to pass it on as
+an open source contribution.
+
+The rules are simple: if you can certify the following statement
+(from [developercertificate.org](http://developercertificate.org)), then you
+can sign off your work.
+
+```
 **Version 1.1**
 
 Copyright (C) 2004, 2006 The Linux Foundation and its contributors.  
@@ -76,8 +84,7 @@ By making a contribution to this project, I certify that:
     personal information I submit with it, including my sign-off) is  
     maintained indefinitely and may be redistributed consistent with  
     this project or the open source license(s) involved.
-
----
+```
 
 Then you just add a line to every git commit message:
 ```bash
