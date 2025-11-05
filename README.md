@@ -1,39 +1,45 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/id8-engineering/python-em511/badge)](https://scorecard.dev/viewer/?uri=github.com/id8-engineering/python-em511)
 
-# python-em511
+## python-em511
 
-Driver for Carlo Gavazzi EM511 Series Single Phase Energy Meters using Modbus RTU.
+python-em511 provides a simple, Pythonic interface for reading and writing data 
+from Carlo Gavazzi EM511 series energy meters over Modbus RTU. It builds on top 
+of [pymodbus](https://pypi.org/project/pymodbus/).
 
-## Get started
+## Example usage:
 
-### Prerequisites
+```python
+from em511 import Em511
+from pymodbus.client import ModbusSerialClient
 
-* Install [Python (>=3.10)](https://www.python.org/downloads/)
-* Install [git](https://git-scm.com/downloads)
-* Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
+# Configure the Modbus client
+client = ModbusSerialClient(
+   port="COM3",  # or "/dev/ttyUSB0" on Linux
+   baudrate=9600,
+   parity="E",
+   stopbits=1,
+   bytesize=8,
+   # datasheet specifies maximum response timeout of 500ms (typical 40ms)
+   timeout=0.5,
+)
 
-### Setup development environment
+# Device Modbus address
+device_address = 1
 
-Clone the repository:
+# Initialize the EM511 driver
+meter = Em511(device_address=device_address, client=client)
 
-```sh
-git clone git@github.com:id8-engineering/python-em511.git
+# Read voltage
+voltage = meter.V
+print(f"Voltage: {voltage} V")
+
+# Example of writing a password-protected parameter
+meter.password = 1234
 ```
 
-Change directory:
+## Report issues
 
-```sh
-cd python-em511
-```
+If you run into problems, you can ask for help in our [issue tracker](https://github.com/id8-engineering/python-em511/issues) on GitHub.
 
-Run pre-commit tests:
-
-```sh
-uv run pre-commit run -a
-```
-
-Build package:
-
-```sh
-uv build
-```
+## Contributing
+See [CONTRIBUTING.MD](https://github.com/id8-engineering/python-em511/blob/main/CONTRIBUTING.MD) and [DEVELOPMENT.MD](https://github.com/id8-engineering/python-em511/blob/main/DEVELOPMENT.MD).
