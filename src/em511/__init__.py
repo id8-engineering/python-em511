@@ -7,3 +7,4 @@ using Carlo Gavazzi EM511 energy meters.
 from .em511 import Em511
 
 __all__ = ["Em511"]
+
