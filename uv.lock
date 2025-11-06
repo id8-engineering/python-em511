@@ -185,7 +185,6 @@ wheels = [
 
 [[package]]
 name = "python-em511"
-version = "0.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "pymodbus", extra = ["serial"] },
