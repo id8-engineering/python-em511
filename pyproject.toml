@@ -3,14 +3,37 @@ name = "python-em511"
 version = "0.0.1"
 description = "Driver for Carlo Gavazzi EM511 Series Single Phase Energy Meters using Modbus RTU"
 readme = "README.md"
+
+license = "MIT"
+license-files = ["LICENSE"]
+
 authors = [
-    { name = "Mirza Krak", email = "mirza@mkrak.org" }
+    { name = "Mirza Krak", email = "mirza@mkrak.org" },
+    { name = "Bobo Bäck Engström", email = "bobo@id8-engineering.io"},
+    { name = "Milad Makdesi", email = "milad@id8-engineering.io"},
+]
+maintainers = [
+    { name = "Mirza Krak", email = "mirza@mkrak.org" },
+    { name = "Bobo Bäck Engström", email = "bobo@id8-engineering.io"},
+    { name = "Milad Makdesi", email = "milad@id8-engineering.io"},
 ]
 requires-python = ">=3.10"
 dependencies = [
     "pymodbus[serial]>=3.11"
 ]
-license = "MIT"
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Embedded Systems",
+]
 
 [build-system]
 requires = ["hatchling"]
