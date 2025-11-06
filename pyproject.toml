@@ -1,6 +1,6 @@
 [project]
 name = "python-em511"
-version = "0.0.1"
+dynamic = ["version"]
 description = "Driver for Carlo Gavazzi EM511 Series Single Phase Energy Meters using Modbus RTU"
 readme = "README.md"
 
@@ -36,11 +36,16 @@ classifiers = [
 ]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/em511"]
+
+[tool.hatch.version]
+source = "regex"
+path = "VERSION"
+pattern = "(?P<version>.*)"
 
 [dependency-groups]
 dev = [
