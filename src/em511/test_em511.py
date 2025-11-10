@@ -1,5 +1,4 @@
-# ruff: noqa: S101,PLR2004, N802
-
+# ruff: noqa: S101, PLR2004, N802, SLF001
 """Test file for driver."""
 
 from decimal import Decimal
@@ -18,17 +17,17 @@ def test_unpack() -> None:
     """Test 1: Should raise exception due to more registers in use than allowed."""
     registers = [0x1860, 0x0023, 0x4244]
     with pytest.raises(ValueError, match="Unexpected register count:"):
-        _ = meter._unpack(registers, 0x0001)  # noqa: SLF001
+        _ = meter._unpack(registers, 0x0001)
 
     """Test 2: Should raise exception due to 16-bit register overflow"""
     registers = [0x7FFF]
     with pytest.raises(ValueError, match="Input overflow EEE for 16-bit register: "):
-        _ = meter._unpack(registers, 0x0001)  # noqa: SLF001
+        _ = meter._unpack(registers, 0x0001)
 
     """Test 3: Should raise exception due to 32-bit register overflow"""
     registers = [0xFFFF, 0x7FFF]
     with pytest.raises(ValueError, match="Input overflow EEE for 32-bit register: "):
-        _ = meter._unpack(registers, 0x0001)  # noqa: SLF001
+        _ = meter._unpack(registers, 0x0001)
 
 
 def test_V() -> None:
@@ -859,40 +858,40 @@ def test_reset_tot_energy_and_run_hour_counter() -> None:
     """Test to reset tot_energy_and_run_hour_counter."""
     client = MagicMock()
     meter = Em511(1, client)
-    meter.write_register = MagicMock()
+    meter._write_register = MagicMock()
 
     meter.reset_tot_energy_and_run_hour_counter()
 
-    meter.write_register.assert_called_once_with(meter.EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER, 1)
+    meter._write_register.assert_called_once_with(meter.EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER, 1)
 
 
 def test_reset_partial_energy_and_hour_counter() -> None:
     """Test to reset partial energy and hour counter."""
     client = MagicMock()
     meter = Em511(1, client)
-    meter.write_register = MagicMock()
+    meter._write_register = MagicMock()
 
     meter.reset_partial_energy_and_hour_counter()
 
-    meter.write_register.assert_called_once_with(meter.EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER, 1)
+    meter._write_register.assert_called_once_with(meter.EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER, 1)
 
 
 def test_reset_dmd_and_dmd_max() -> None:
     """Test to reset DMD and DMD max values."""
     client = MagicMock()
     meter = Em511(1, client)
-    meter.write_register = MagicMock()
+    meter._write_register = MagicMock()
 
     meter.reset_dmd_and_dmd_max()
 
-    meter.write_register.assert_called_once_with(meter.EM511_REGISTER_RESET_DMD_AND_DMD_MAX, 1)
+    meter._write_register.assert_called_once_with(meter.EM511_REGISTER_RESET_DMD_AND_DMD_MAX, 1)
 
 
 def test_reset_to_factory_settings() -> None:
     """Test to reset to factory default settings."""
     client = MagicMock()
     meter = Em511(1, client)
-    meter.write_register = MagicMock()
+    meter._write_register = MagicMock()
 
     meter.reset_to_factory_settings()
 
@@ -902,10 +901,10 @@ def test_reset_to_factory_settings() -> None:
         call(meter.EM511_REGISTER_RESET_TO_FACTORY_SETTINGS, 0xC1A0),
     ]
 
-    """Verify that `reset_to_factory_settings` calls `write_register` twice with the correct values in order."""
-    meter.write_register.assert_has_calls(expected_calls)
-    meter.write_register.assert_called()
-    assert meter.write_register.call_count == 2
+    """Verify that `reset_to_factory_settings` calls `_write_register` twice with the correct values in order."""
+    meter._write_register.assert_has_calls(expected_calls)
+    meter._write_register.assert_called()
+    assert meter._write_register.call_count == 2
 
 
 def test_get_firmware_and_revision_code() -> None:
