@@ -387,10 +387,6 @@ class Em511:
             )
             raise ModbusException(msg)
 
-    def write_register(self, address: int, value: int) -> None:
-        """Public wrapper for `_write_register`."""
-        self._write_register(address, value)
-
     def _unpack(self, regs: list[int], address: int) -> int:
         """Unpack raw Modbus register data into an integer value.
 
@@ -455,7 +451,7 @@ class Em511:
         Raises:
             ModbusException: If failed to write to single register.
         """
-        self.write_register(self.EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER, 1)
+        self._write_register(self.EM511_REGISTER_RESET_TOT_ENERGY_AND_RUN_HOUR_COUNTER, 1)
 
     def reset_partial_energy_and_hour_counter(self) -> None:
         """Reset partial energy + partial run hour counters.
@@ -463,7 +459,7 @@ class Em511:
         Raises:
             ModbusException: If failed to write to single register.
         """
-        self.write_register(self.EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER, 1)
+        self._write_register(self.EM511_REGISTER_RESET_PARTIAL_ENERGY_AND_HOUR_COUNTER, 1)
 
     def reset_dmd_and_dmd_max(self) -> None:
         """Reset DMD and DMD max values.
@@ -471,7 +467,7 @@ class Em511:
         Raises:
             ModbusException: If failed to write to single register.
         """
-        self.write_register(self.EM511_REGISTER_RESET_DMD_AND_DMD_MAX, 1)
+        self._write_register(self.EM511_REGISTER_RESET_DMD_AND_DMD_MAX, 1)
 
     def reset_to_factory_settings(self) -> None:
         """Factory Restore (Default settings).
@@ -481,5 +477,5 @@ class Em511:
         Raises:
             ModbusException: If failed to write to single register.
         """
-        self.write_register(self.EM511_REGISTER_RESET_TO_FACTORY_SETTINGS, 0x0A0A)
-        self.write_register(self.EM511_REGISTER_RESET_TO_FACTORY_SETTINGS, 0xC1A0)
+        self._write_register(self.EM511_REGISTER_RESET_TO_FACTORY_SETTINGS, 0x0A0A)
+        self._write_register(self.EM511_REGISTER_RESET_TO_FACTORY_SETTINGS, 0xC1A0)
