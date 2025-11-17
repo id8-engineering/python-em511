@@ -23,4 +23,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          dco-check --verbose
+          dco-check --verbose --exclude-pattern 'dependabot\[bot\]@users\.noreply\.github\.com'
