@@ -183,13 +183,13 @@ class Em511:
         "kwh_tot": RegisterSpec(
             address=0x0010,
             count=2,
-            decimals=1,
+            decimals=4,
             scale=10,
         ),
         "kwh_partial": RegisterSpec(
             address=0x0014,
             count=2,
-            decimals=1,
+            decimals=4,
             scale=10,
         ),
         "hour_counter": RegisterSpec(
