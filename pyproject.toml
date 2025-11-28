@@ -3,6 +3,7 @@ name = "python-em511"
 dynamic = ["version"]
 description = "Driver for Carlo Gavazzi EM511 Series Single Phase Energy Meters using Modbus RTU"
 readme = "README.md"
+homepage = "https://github.com/id8-engineering/python-em511"
 
 license = "MIT"
 license-files = ["LICENSE"]
