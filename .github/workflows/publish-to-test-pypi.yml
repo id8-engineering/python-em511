@@ -28,7 +28,7 @@ jobs:
           echo "${BASE_VERSION}${BUILD}" > VERSION
 
       - name: Build distributions with uv
-        run: uv build --wheel
+        run: uv build
 
       - name: Upload distributions as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #  v6.0.0
