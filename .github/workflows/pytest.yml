@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   uv-example:
     name: python
@@ -31,4 +35,3 @@ jobs:
       - name: Run tests
         run: |
           uv run pytest
-
