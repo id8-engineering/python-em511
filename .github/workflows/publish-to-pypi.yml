@@ -5,6 +5,10 @@ on:
     tags:
       - "*"
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   build:
     name: Build distribution
@@ -56,4 +60,3 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           verbose: true
-
